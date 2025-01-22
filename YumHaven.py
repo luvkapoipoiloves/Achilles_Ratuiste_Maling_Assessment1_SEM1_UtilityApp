@@ -2,31 +2,49 @@
 from tabulate import tabulate
 import random
 
-def display_menu(items, categories):
-    """Displays the menu of items, grouped by categories."""
-    print("\n--- Yum Haven Vending Machine Menu ---")
-    for category in categories:
-        print(f"\nCategory: {category}")
+def display_categories(categories):
+    #This part will display the available categories in which the user will choose from.
+    print("\n--- Available Categories ---")
+    for index, category in enumerate(categories, start=1):
+        print(f"{index}. {category}")
+    print("0. Exit")
 
+def display_items_in_each_category(items, category):
         #This Filters the items by category
         category_items =[item for item in items if item['category'] == category]
 
         #This create seperate tables to make it simpler for the users experience.
         table =[[index + 1, item['name'], f"AED {item['price']:.2f}", item['stock']]
                 for index, item in enumerate(category_items)]
-        
+        print(f"\n--- Items in {category} ---")
+
         #This Prints the table 
         print(tabulate(table, headers= ["#", "Item", "Price", "Stock"], tablefmt= "grid"))
-print ("\n0. Exit")
+        print ("\n0. Go Back")
+        return category_items
 
-def select_item(items):
-    """Allows the user to select an item by entering its number."""
+def select_category(categories):
+    #This part will allow the user to select a category.
+    try:
+        choice = int(input("n\Enter the category number to see: "))
+        if choice == 0:
+            return None
+        if 1 <= choice <= len(categories):
+            return categories [choice - 1]
+        else:
+            print ("Invalid Number, Please Try Again. ")
+    except ValueError:
+        print ("Invalid Input. Please try again. ")
+    return None
+
+def select_item_from_category(category_items):
+    #This will allow the user to select an item from the category they choose.
     try:
         choice = int(input("Enter the item number to purchase: "))
         if choice == 0:
             return None
-        if 1 <= choice <= len(items):
-            item = items[choice - 1]
+        if 1 <= choice <= len(category_items):
+            item = category_items[choice - 1]
             if item['stock'] > 0:
                 return item
             else:
@@ -43,7 +61,7 @@ def insert_money(item):
         try:
             money = float(input(f"Insert money to buy {item['name']} (AED {item['price']}): "))
             if money < item['price']:
-                print(f"Not enough money. {item['name']} costs AED {item['price']}.")
+                print(f"Not enough money. {item['name']} costs AED {item['price']:.2f}.")
             else:
                 change = money - item['price']
                 print(f"Dispensing {item['name']}... Enjoy!")
@@ -87,65 +105,47 @@ def vending_machine():
 
     print("Welcome to the Yum Haven Vending Machine!")
     while True:
-        display_menu(items, categories)
-        item = select_item(items)
-        if item:
-            insert_money(item)
-            suggest_item(items, item)
-        else:
-            print("Thank you for using Yum Haven Vending MAchine. Have a good day!")
+        display_categories(categories)
+        selected_category = select_category(categories)
+        if not selected_category:
+            print("Thank you for using Yum Haven. Have a nice day!")
             break
+        # This will show the items in the selected category by the user
+        category_items = display_items_in_each_category(items, selected_category)
+        selected_item = select_item_from_category(category_items)
+        if selected_item:
+            insert_money(selected_item)
+            suggest_item(items, selected_item)
 
 # Run the program
 vending_machine()
 
 #Updated Display
-#Welcome to the Yum Haven Vending Machine!    
+""" Welcome to the Yum Haven Vending Machine!
 
-#--- Yum Haven Vending Machine Menu ---       
+--- Available Categories ---
+1. Hot Drinks
+2. Snacks
+3. Drinks
+0. Exit
+n\Enter the category number to see: 2
 
-#Category: Hot Drinks
-#+-----+---------------+----------+---------+ 
-#|   # | Item          | Price    |   Stock | 
-#+=====+===============+==========+=========+ 
-#|   1 | Tea           | AED 4.00 |      10 | 
-#+-----+---------------+----------+---------+ 
-#|   2 | Coffee        | AED 7.50 |       8 | 
-#+-----+---------------+----------+---------+ 
-#|   3 | Hot Chocolate | AED 9.00 |       5 | 
-#+-----+---------------+----------+---------+ 
+--- Items in Snacks ---
++-----+---------------+-----------+---------+
+|   # | Item          | Price     |   Stock |
++=====+===============+===========+=========+
+|   1 | Chips         | AED 4.00  |      12 |
++-----+---------------+-----------+---------+
+|   2 | Chocolate Bar | AED 6.00  |      10 |
++-----+---------------+-----------+---------+
+|   3 | Biscuits      | AED 7.00  |       8 |
++-----+---------------+-----------+---------+
+|   4 | Cookies       | AED 8.50  |       6 |
++-----+---------------+-----------+---------+
+|   5 | Granola Bar   | AED 5.50  |       9 |
++-----+---------------+-----------+---------+
+|   6 | Sandwich      | AED 15.00 |       3 |
++-----+---------------+-----------+---------+
 
-#Category: Snacks
-#+-----+---------------+-----------+---------+
-#|   # | Item          | Price     |   Stock |
-#+=====+===============+===========+=========+
-#|   1 | Chips         | AED 4.00  |      12 |
-#+-----+---------------+-----------+---------+
-#|   2 | Chocolate Bar | AED 6.00  |      10 |
-#+-----+---------------+-----------+---------+
-#|   3 | Biscuits      | AED 7.00  |       8 |
-#+-----+---------------+-----------+---------+
-#|   4 | Cookies       | AED 8.50  |       6 |
-#+-----+---------------+-----------+---------+
-#|   5 | Granola Bar   | AED 5.50  |       9 |
-#+-----+---------------+-----------+---------+
-#|   6 | Sandwich      | AED 15.00 |       3 |
-#+-----+---------------+-----------+---------+
-
-#Category: Drinks
-#+-----+--------------+-----------+---------+ 
-#|   # | Item         | Price     |   Stock | 
-#+=====+==============+===========+=========+ 
-#|   1 | Coke         | AED 5.00  |      10 | 
-#+-----+--------------+-----------+---------+ 
-#|   2 | Pepsi        | AED 5.00  |       8 | 
-#+-----+--------------+-----------+---------+ 
-#|   3 | Water        | AED 3.00  |      15 | 
-#+-----+--------------+-----------+---------+ 
-#|   4 | Orange Juice | AED 6.50  |       7 | 
-#+-----+--------------+-----------+---------+ 
-#|   5 | Iced Coffee  | AED 10.00 |       5 | 
-#+-----+--------------+-----------+---------+ 
-#|   6 | Energy Drink | AED 12.00 |       4 | 
-#+-----+--------------+-----------+---------+ 
-#Enter the item number to purchase:
+0. Go Back
+Enter the item number to purchase: """
