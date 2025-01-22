@@ -1,28 +1,28 @@
-# Yum Haven Vending Machine 
+# Ni's Vending Machine 
 from tabulate import tabulate
 import random
 
-Yum_points = {"user": 0} #Yum points for customers who use Yum Haven Daily
+Gelo_points = {"user": 0} #Gelo points for customers who use Ni's Vending Machine Daily
 
 admin_password = "admin123@" #password for access on admin mode
 
     # List of items in the vending machine
 items = [
-        {"name": "Coke", "price": 5.00, "stock": 10, "category": "Drinks"},
-        {"name": "Pepsi", "price": 5.00, "stock": 8, "category": "Drinks"},
-        {"name": "Water", "price": 3.00, "stock": 15, "category": "Drinks"},
-        {"name": "Orange Juice", "price": 6.50, "stock": 7, "category": "Drinks"},
-        {"name": "Iced Coffee", "price": 10.00, "stock": 5, "category": "Drinks"},
-        {"name": "Chips", "price": 4.00, "stock": 12, "category": "Snacks"},
-        {"name": "Chocolate Bar", "price": 6.00, "stock": 10, "category": "Snacks"},
-        {"name": "Biscuits", "price": 7.00, "stock": 8, "category": "Snacks"},
-        {"name": "Cookies", "price": 8.50, "stock": 6, "category": "Snacks"},
-        {"name": "Granola Bar", "price": 5.50, "stock": 9, "category": "Snacks"},
-        {"name": "Energy Drink", "price": 12.00, "stock": 4, "category": "Drinks"},
-        {"name": "Sandwich", "price": 15.00, "stock": 3, "category": "Snacks"},
-        {"name": "Tea", "price": 4.00, "stock": 10, "category": "Hot Drinks"},
-        {"name": "Coffee", "price": 7.50, "stock": 8, "category": "Hot Drinks"},
-        {"name": "Hot Chocolate", "price": 9.00, "stock": 5, "category": "Hot Drinks"},
+        {"name": "Gelo's Coke", "price": 5.00, "stock": 10, "category": "Drinks"},
+        {"name": "Kapoipoi's Pepsi", "price": 5.00, "stock": 8, "category": "Drinks"},
+        {"name": "Nyang's Water with ice", "price": 3.00, "stock": 15, "category": "Drinks"},
+        {"name": "CooCoo's Orange Juice", "price": 6.50, "stock": 7, "category": "Drinks"},
+        {"name": "Nyang's Extra Iced Coffee", "price": 10.00, "stock": 5, "category": "Drinks"},
+        {"name": "Ni Chips", "price": 4.00, "stock": 12, "category": "Snacks"},
+        {"name": "SNI'sker Chocolate Bar ", "price": 6.00, "stock": 10, "category": "Snacks"},
+        {"name": "Ai nd Ni's Crunchy Milk Biscuits", "price": 7.00, "stock": 8, "category": "Snacks"},
+        {"name": "Gelo's Footlong Cookies", "price": 8.50, "stock": 6, "category": "Snacks"},
+        {"name": "Ai's Protein Bar", "price": 5.50, "stock": 9, "category": "Snacks"},
+        {"name": "Ibi Energy Drink", "price": 12.00, "stock": 4, "category": "Drinks"},
+        {"name": "Ni's Sandwich (NO KETCHUP)", "price": 15.00, "stock": 3, "category": "Snacks"},
+        {"name": "Mapoipoi Tea", "price": 4.00, "stock": 10, "category": "Hot Drinks"},
+        {"name": "Ai's Iced Mocha Coffee", "price": 7.50, "stock": 8, "category": "Hot Drinks"},
+        {"name": "Hot Ni Chocolate", "price": 9.00, "stock": 5, "category": "Hot Drinks"},
     ]
 
 def display_categories(categories):
@@ -78,6 +78,28 @@ def select_item_from_category(category_items):
         print("Invalid input. Please enter a number.")
     return None
 
+def calculate_Gelo_points(price):
+    #This will calculate every 5 aed spent, you earn 2 gelo points.
+    return int((price // 5) * 2)
+
+def use_Gelo_points(item):
+
+    #This function will allow the user to use Gelo points to purchase items from Ni's Vending Machine
+    if Gelo_points['user'] >= item['price']:
+        print(f"You can use {int(item['price'])} Gelo points to purchase {item['name']}.")
+        confirm = input("Would you like to use your Gelo points? (yes/no): ").lower()
+        if confirm == 'yes':
+            Gelo_points['user'] -= int(item['price'])
+            item['stock'] -= 1
+            print(f"Dispensing {item['name']}... Enjoy!")
+            print(f"Points deducted. Your remaining points: {Gelo_points['user']}.")
+            return True
+        else:
+            print("You chose not to use points.")
+    else:
+        print(f"Not enough points. You need {int(item['price'] - Gelo_points['user'])} more points to buy this item.")
+    return False
+
 def insert_money(item):
     """Handles money insertion and returns whether the user can afford the item."""
     while True:
@@ -92,15 +114,16 @@ def insert_money(item):
                     print(f"Your change is AED {change:.2f}.")
                 item['stock'] -= 1
 
-                #This adds a Yum point for the user
-                Yum_points['user'] += int(item['price'])
-                print(f"You have earned {int(item['price'])} Yum points. Total Yum points: {Yum_points['user']}.")
+                #This adds a Gelo Point for the user
+                points_earned = calculate_Gelo_points(item['price'])
+                Gelo_points['user'] += points_earned
+                print(f"You earned {points_earned} Gelo points. Total points: {Gelo_points['user']}.")
                 return
         except ValueError:
             print("Invalid input. Please insert a valid amount.")
 
 def admin_mode():
-    #This feature lets the user access admin mode specifically for employees or restockers for Yum Haven
+    #This feature lets the user access admin mode specifically for employees or restockers for Ni's Vending Machine
     password = input("Enter Password: ")
     if password == admin_password:
         print ("\n--- Admin Mode ---")
@@ -134,9 +157,12 @@ def admin_mode():
     else:
         print("Incorrect password. Access denied.")
 
-def suggest_item(items, current_item):
+def suggest_item(items, purchased_item):
     """Suggests a random item from the same category."""
-    same_category_items = [item for item in items if item['category'] == current_item['category'] and item != current_item and item['stock'] > 0]
+    same_category_items = [
+        item for item in items 
+        if item['category'] == purchased_item['category'] and item != purchased_item and item['stock'] > 0
+    ]
     if same_category_items:
         suggestion = random.choice(same_category_items)
         print(f"Suggestion: How about trying {suggestion['name']} for AED {suggestion['price']:.2f}?")
@@ -147,10 +173,10 @@ def vending_machine():
      # Seperates each snacks and drinks to specific categories.
     categories = list(set(item['category'] for item in items))
 
-    print("Welcome to the Yum Haven Vending Machine!")
+    print("Welcome to the Ni's Vending Machine!")
     while True:
         print ("\n1. Browse Items")
-        print ("2. Check your current Yum Points")
+        print ("2. Check your current Gelo Points")
         print ("3. Admin Mode (For Restockers)")
         print ("0. Exit")
         try:
@@ -165,12 +191,16 @@ def vending_machine():
                 category_items = display_items_in_each_category(items, selected_categories)
                 selected_items = select_item_from_category(category_items)
                 if selected_items:
-                    insert_money(selected_items)
+                    if not use_Gelo_points(selected_items):
+                        insert_money(selected_items)
+
+                    # This will suggest another item
+                    suggest_item(items, selected_items)
 
             elif main_choice == 2:
 
                 #if the user picks 2, it will allow the user to view their current yum points
-                print (f"You currently have: {Yum_points['user']}")
+                print (f"You currently have: {Gelo_points['user']}")
 
             elif main_choice == 3:
 
@@ -178,7 +208,7 @@ def vending_machine():
                 admin_mode()
             
             elif main_choice == 0:
-                print ("Thank you for using the Yum Haven Vending Machine, Have a good day!")
+                print ("Thank you for using the Ni's Vending Machine, Have a good day!")
                 
                 break
             
@@ -192,126 +222,154 @@ def vending_machine():
 vending_machine()
 
 #Updated Display of the Program
-""" Welcome to the Yum Haven Vending Machine!
+""" Welcome to the Ni's Vending Machine!
 
 1. Browse Items
-2. Check your current Yum Points
+2. Check your current Gelo Points
 3. Admin Mode (For Restockers)
 0. Exit
+Choose an option: 2
+You currently have: 0
 
-Choose an option: 
-
+1. Browse Items
+2. Check your current Gelo Points
+3. Admin Mode (For Restockers)   
+0. Exit
 Choose an option: 1
 
---- Available Categories ---
-1. Hot Drinks
-2. Snacks
-3. Drinks
+--- Available Categories ---      
+1. Snacks
+2. Drinks
+3. Hot Drinks
 0. Exit
-
-Enter the category number to see:
 
 Enter the category number to see: 1
 
 --- Items in Snacks ---
-+-----+---------------+-----------+---------+
-|   # | Item          | Price     |   Stock |
-+=====+===============+===========+=========+
-|   1 | Chips         | AED 4.00  |      12 |
-+-----+---------------+-----------+---------+
-|   2 | Chocolate Bar | AED 6.00  |      10 |
-+-----+---------------+-----------+---------+
-|   3 | Biscuits      | AED 7.00  |       8 |
-+-----+---------------+-----------+---------+
-|   4 | Cookies       | AED 8.50  |       6 |
-+-----+---------------+-----------+---------+
-|   5 | Granola Bar   | AED 5.50  |       9 |
-+-----+---------------+-----------+---------+
-|   6 | Sandwich      | AED 15.00 |       3 |
-+-----+---------------+-----------+---------+
++-----+----------------------------------+-----------+---------+
+|   # | Item                             | Price     |   Stock |
++=====+==================================+===========+=========+
+|   1 | Ni Chips                         | AED 4.00  |      12 |
++-----+----------------------------------+-----------+---------+
+|   2 | SNI'sker Chocolate Bar           | AED 6.00  |      10 |
++-----+----------------------------------+-----------+---------+
+|   3 | Ai nd Ni's Crunchy Milk Biscuits | AED 7.00  |       8 |
++-----+----------------------------------+-----------+---------+
+|   4 | Gelo's Footlong Cookies          | AED 8.50  |       6 |
++-----+----------------------------------+-----------+---------+
+|   5 | Ai's Protein Bar                 | AED 5.50  |       9 |
++-----+----------------------------------+-----------+---------+
+|   6 | Ni's Sandwich (NO KETCHUP)       | AED 15.00 |       3 |
++-----+----------------------------------+-----------+---------+
 
 0. Go Back
-Enter the item number to purchase: 
-
 Enter the item number to purchase: 6
-
-Insert money to buy Sandwich (AED 15.0):
-
-Insert money to buy Sandwich (AED 15.0): 20
-Dispensing Sandwich... Enjoy!
-Your change is AED 5.00.
-You have earned 15 Yum points. Total Yum points: 15.
+Not enough points. You need 15 more points to buy this item.
+Insert money to buy Ni's Sandwich (NO KETCHUP) (AED 15.0): 50
+Dispensing Ni's Sandwich (NO KETCHUP)... Enjoy!
+Your change is AED 35.00.
+You earned 6 Gelo points. Total points: 6.
+Suggestion: How about trying Gelo's Footlong Cookies for AED 8.50?
 
 1. Browse Items
-2. Check your current Yum Points
+2. Check your current Gelo Points
 3. Admin Mode (For Restockers)
 0. Exit
+Choose an option: 2
+You currently have: 6
 
-Choose an option: 
-
+1. Browse Items
+2. Check your current Gelo Points
+3. Admin Mode (For Restockers)
+0. Exit
 Choose an option: 3
 Enter Password: admin123@
 
---- Admin Mode --- 
-
-1. View Item Stock 
-2. Restock Items   
-3. Exit Admin Mode 
-Enter your choice: 1
-
---- Current Stock ---
-╒═══════════════╤════════════╤═══════════╤═════════╕
-│ Item          │ Category   │ Price     │   Stock │
-╞═══════════════╪════════════╪═══════════╪═════════╡
-│ Coke          │ Drinks     │ AED 5.00  │      10 │
-├───────────────┼────────────┼───────────┼─────────┤
-│ Pepsi         │ Drinks     │ AED 5.00  │       8 │
-├───────────────┼────────────┼───────────┼─────────┤
-│ Water         │ Drinks     │ AED 3.00  │      15 │
-├───────────────┼────────────┼───────────┼─────────┤
-│ Orange Juice  │ Drinks     │ AED 6.50  │       7 │
-├───────────────┼────────────┼───────────┼─────────┤
-│ Iced Coffee   │ Drinks     │ AED 10.00 │       5 │
-├───────────────┼────────────┼───────────┼─────────┤
-│ Chips         │ Snacks     │ AED 4.00  │      12 │
-├───────────────┼────────────┼───────────┼─────────┤
-│ Chocolate Bar │ Snacks     │ AED 6.00  │      10 │
-├───────────────┼────────────┼───────────┼─────────┤
-│ Biscuits      │ Snacks     │ AED 7.00  │       8 │
-├───────────────┼────────────┼───────────┼─────────┤
-│ Cookies       │ Snacks     │ AED 8.50  │       6 │
-├───────────────┼────────────┼───────────┼─────────┤
-│ Granola Bar   │ Snacks     │ AED 5.50  │       9 │
-├───────────────┼────────────┼───────────┼─────────┤
-│ Energy Drink  │ Drinks     │ AED 12.00 │       4 │
-├───────────────┼────────────┼───────────┼─────────┤
-│ Sandwich      │ Snacks     │ AED 15.00 │       3 │
-├───────────────┼────────────┼───────────┼─────────┤
-│ Tea           │ Hot Drinks │ AED 4.00  │      10 │
-├───────────────┼────────────┼───────────┼─────────┤
-│ Coffee        │ Hot Drinks │ AED 7.50  │       8 │
-├───────────────┼────────────┼───────────┼─────────┤
-│ Hot Chocolate │ Hot Drinks │ AED 9.00  │       5 │
-╘═══════════════╧════════════╧═══════════╧═════════╛
+--- Admin Mode ---
 
 1. View Item Stock
 2. Restock Items
 3. Exit Admin Mode
-Enter your choice: 2
-Enter new stock quantity for Coke (current stock: 10): 11
-Enter new stock quantity for Pepsi (current stock: 8): 12
-Enter new stock quantity for Water (current stock: 15): 16
-Enter new stock quantity for Orange Juice (current stock: 7): 17
-Enter new stock quantity for Iced Coffee (current stock: 5): 6
-Enter new stock quantity for Chips (current stock: 12): 13
-Enter new stock quantity for Chocolate Bar (current stock: 10): 11
-Enter new stock quantity for Biscuits (current stock: 8): 9
-Enter new stock quantity for Cookies (current stock: 6): 7
-Enter new stock quantity for Granola Bar (current stock: 9): 10
-Enter new stock quantity for Energy Drink (current stock: 4): 5
-Enter new stock quantity for Sandwich (current stock: 3): 4
-Enter new stock quantity for Tea (current stock: 10): 11
-Enter new stock quantity for Coffee (current stock: 8): 8
-Enter new stock quantity for Hot Chocolate (current stock: 5): 6
-Items restocked successfully.
+Enter your choice: 3
+Exiting Admin Mode.
+
+1. Browse Items
+2. Check your current Gelo Points
+3. Admin Mode (For Restockers)
+0. Exit
+Choose an option: 1
+
+--- Available Categories ---
+1. Snacks
+2. Drinks
+3. Hot Drinks
+0. Exit
+
+Enter the category number to see: 2
+
+--- Items in Drinks ---
++-----+---------------------------+-----------+---------+
+|   # | Item                      | Price     |   Stock |
++=====+===========================+===========+=========+
+|   1 | Gelo's Coke               | AED 5.00  |      10 |
++-----+---------------------------+-----------+---------+
+|   2 | Kapoipoi's Pepsi          | AED 5.00  |       8 |
++-----+---------------------------+-----------+---------+
+|   3 | Nyang's Water with ice    | AED 3.00  |      15 |
++-----+---------------------------+-----------+---------+
+|   4 | CooCoo's Orange Juice     | AED 6.50  |       7 |
++-----+---------------------------+-----------+---------+
+|   5 | Nyang's Extra Iced Coffee | AED 10.00 |       5 |
++-----+---------------------------+-----------+---------+
+|   6 | Ibi Energy Drink          | AED 12.00 |       4 |
++-----+---------------------------+-----------+---------+
+
+0. Go Back
+Enter the item number to purchase: 6
+Not enough points. You need 6 more points to buy this item.
+Insert money to buy Ibi Energy Drink (AED 12.0): 35
+Dispensing Ibi Energy Drink... Enjoy!
+Your change is AED 23.00.
+You earned 4 Gelo points. Total points: 10.
+Suggestion: How about trying CooCoo's Orange Juice for AED 6.50?
+
+1. Browse Items
+2. Check your current Gelo Points
+3. Admin Mode (For Restockers)
+0. Exit
+Choose an option: 1
+
+--- Available Categories ---
+1. Snacks
+2. Drinks
+3. Hot Drinks
+0. Exit
+
+Enter the category number to see: 3
+
+--- Items in Hot Drinks ---
++-----+------------------------+----------+---------+
+|   # | Item                   | Price    |   Stock |
++=====+========================+==========+=========+
+|   1 | Mapoipoi Tea           | AED 4.00 |      10 |
++-----+------------------------+----------+---------+
+|   2 | Ai's Iced Mocha Coffee | AED 7.50 |       8 |
++-----+------------------------+----------+---------+
+|   3 | Hot Ni Chocolate       | AED 9.00 |       5 |
++-----+------------------------+----------+---------+
+
+0. Go Back
+Enter the item number to purchase: 3
+You can use 9 Gelo points to purchase Hot Ni Chocolate.
+Would you like to use your Gelo points? (yes/no): yes
+Dispensing Hot Ni Chocolate... Enjoy!
+Points deducted. Your remaining points: 1.
+Suggestion: How about trying Ai's Iced Mocha Coffee for AED 7.50?
+
+1. Browse Items
+2. Check your current Gelo Points
+3. Admin Mode (For Restockers)
+0. Exit
+Choose an option: 0
+Thank you for using the Ni's Vending Machine, Have a good day!
 """
