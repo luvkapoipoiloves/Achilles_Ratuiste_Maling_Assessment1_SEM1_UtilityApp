@@ -1,4 +1,5 @@
 # Yum Haven Vending Machine 
+from tabulate import tabulate
 import random
 
 def display_menu(items, categories):
@@ -6,10 +7,17 @@ def display_menu(items, categories):
     print("\n--- Yum Haven Vending Machine Menu ---")
     for category in categories:
         print(f"\nCategory: {category}")
-        for index, item in enumerate(items):
-            if item['category'] == category:
-                print(f"{index + 1}. {item['name']} - AED {item['price']} (Stock: {item['stock']})")
-    print("0. Exit")
+
+        #This Filters the items by category
+        category_items =[item for item in items if item['category'] == category]
+
+        #This create seperate tables to make it simpler for the users experience.
+        table =[[index + 1, item['name'], f"AED {item['price']:.2f}", item['stock']]
+                for index, item in enumerate(category_items)]
+        
+        #This Prints the table 
+        print(tabulate(table, headers= ["#", "Item", "Price", "Stock"], tablefmt= "grid"))
+print ("\n0. Exit")
 
 def select_item(items):
     """Allows the user to select an item by entering its number."""
@@ -92,27 +100,52 @@ def vending_machine():
 vending_machine()
 
 #Updated Display
-#--- Yum Haven Vending Machine Menu ---
+#Welcome to the Yum Haven Vending Machine!    
 
-#Category: Drinks
-#1. Coke - AED 5.0 (Stock: 10)
-#2. Pepsi - AED 5.0 (Stock: 8)
-#3. Water - AED 3.0 (Stock: 15)
-#4. Orange Juice - AED 6.5 (Stock: 7)
-#5. Iced Coffee - AED 10.0 (Stock: 5)
-#11. Energy Drink - AED 12.0 (Stock: 4)
-
-#Category: Snacks
-#6. Chips - AED 4.0 (Stock: 12)
-#7. Chocolate Bar - AED 6.0 (Stock: 10)
-#8. Biscuits - AED 7.0 (Stock: 8)
-#9. Cookies - AED 8.5 (Stock: 6)
-#10. Granola Bar - AED 5.5 (Stock: 9)
-#12. Sandwich - AED 15.0 (Stock: 3)
+#--- Yum Haven Vending Machine Menu ---       
 
 #Category: Hot Drinks
-#13. Tea - AED 4.0 (Stock: 10)
-#14. Coffee - AED 7.5 (Stock: 8)
-#15. Hot Chocolate - AED 9.0 (Stock: 5)
-#0. Exit
+#+-----+---------------+----------+---------+ 
+#|   # | Item          | Price    |   Stock | 
+#+=====+===============+==========+=========+ 
+#|   1 | Tea           | AED 4.00 |      10 | 
+#+-----+---------------+----------+---------+ 
+#|   2 | Coffee        | AED 7.50 |       8 | 
+#+-----+---------------+----------+---------+ 
+#|   3 | Hot Chocolate | AED 9.00 |       5 | 
+#+-----+---------------+----------+---------+ 
+
+#Category: Snacks
+#+-----+---------------+-----------+---------+
+#|   # | Item          | Price     |   Stock |
+#+=====+===============+===========+=========+
+#|   1 | Chips         | AED 4.00  |      12 |
+#+-----+---------------+-----------+---------+
+#|   2 | Chocolate Bar | AED 6.00  |      10 |
+#+-----+---------------+-----------+---------+
+#|   3 | Biscuits      | AED 7.00  |       8 |
+#+-----+---------------+-----------+---------+
+#|   4 | Cookies       | AED 8.50  |       6 |
+#+-----+---------------+-----------+---------+
+#|   5 | Granola Bar   | AED 5.50  |       9 |
+#+-----+---------------+-----------+---------+
+#|   6 | Sandwich      | AED 15.00 |       3 |
+#+-----+---------------+-----------+---------+
+
+#Category: Drinks
+#+-----+--------------+-----------+---------+ 
+#|   # | Item         | Price     |   Stock | 
+#+=====+==============+===========+=========+ 
+#|   1 | Coke         | AED 5.00  |      10 | 
+#+-----+--------------+-----------+---------+ 
+#|   2 | Pepsi        | AED 5.00  |       8 | 
+#+-----+--------------+-----------+---------+ 
+#|   3 | Water        | AED 3.00  |      15 | 
+#+-----+--------------+-----------+---------+ 
+#|   4 | Orange Juice | AED 6.50  |       7 | 
+#+-----+--------------+-----------+---------+ 
+#|   5 | Iced Coffee  | AED 10.00 |       5 | 
+#+-----+--------------+-----------+---------+ 
+#|   6 | Energy Drink | AED 12.00 |       4 | 
+#+-----+--------------+-----------+---------+ 
 #Enter the item number to purchase:
