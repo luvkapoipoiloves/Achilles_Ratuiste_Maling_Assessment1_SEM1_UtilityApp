@@ -1,6 +1,6 @@
 # Ni's Vending Machine 
-from tabulate import tabulate
-import random
+from tabulate import tabulate #Reference: https://pypi.org/project/tabulate/
+import random #Reference: https://github.com/python/cpython/blob/3.13/Lib/random.py 
 
 Gelo_points = {"user": 0} #Gelo points for customers who use Ni's Vending Machine Daily
 
@@ -23,10 +23,12 @@ items = [
         {"name": "Mapoipoi Tea", "price": 4.00, "stock": 10, "category": "Hot Drinks"},
         {"name": "Ai's Iced Mocha Coffee", "price": 7.50, "stock": 8, "category": "Hot Drinks"},
         {"name": "Hot Ni Chocolate", "price": 9.00, "stock": 5, "category": "Hot Drinks"},
-    ]
+    ] #
 
 def display_categories(categories):
     #This part will display the available categories in which the user will choose from.
+    #Reference: Dynamic extraction of unique values: https://stackoverflow.com/questions/12897374/get-unique-values-from-a-list-in-python
+
     print("\n--- Available Categories ---")
     for index, category in enumerate(categories, start=1):
         print(f"{index}. {category}")
@@ -42,12 +44,13 @@ def display_items_in_each_category(items, category):
         print(f"\n--- Items in {category} ---")
 
         #This Prints the table 
-        print(tabulate(table, headers= ["#", "Item", "Price", "Stock"], tablefmt= "grid"))
+        print(tabulate(table, headers= ["#", "Item", "Price", "Stock"], tablefmt= "grid")) #Reference: https://pypi.org/project/tabulate/
         print ("\n0. Go Back")
         return category_items
 
 def select_category(categories):
-    #This part will allow the user to select a category.
+    #This part will allow the user to select a category. 
+    #Reference for exception handling: https://realpython.com/python-exceptions/
     try:
         choice = int(input("\nEnter the category number to see: "))
         if choice == 0:
@@ -79,7 +82,8 @@ def select_item_from_category(category_items):
     return None
 
 def calculate_Gelo_points(price):
-    #This will calculate every 5 aed spent, you earn 2 gelo points.
+    #This will calculate every 5 aed spent, you earn 2 gelo points. 
+    #Reference: Integer division and basic arithmetic: https://docs.python.org/3/tutorial/introduction.html#numbers
     return int((price // 5) * 2)
 
 def use_Gelo_points(item):
@@ -157,7 +161,9 @@ def admin_mode():
     else:
         print("Incorrect password. Access denied.")
 
-def suggest_item(items, purchased_item):
+def suggest_item(items, purchased_item): 
+#Reference: https://github.com/python/cpython/blob/3.13/Lib/random.py
+
     """Suggests a random item from the same category."""
     same_category_items = [
         item for item in items 
