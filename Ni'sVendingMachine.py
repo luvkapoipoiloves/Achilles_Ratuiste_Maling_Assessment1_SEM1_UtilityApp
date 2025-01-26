@@ -105,7 +105,7 @@ def use_Gelo_points(item):
     return False
 
 def insert_money(item):
-    """Handles money insertion and returns whether the user can afford the item."""
+    #This function handles the money insertion as it allows users to input money.  
     while True:
         try:
             money = float(input(f"Insert money to buy {item['name']} (AED {item['price']}): "))
@@ -205,7 +205,7 @@ def vending_machine():
 
             elif main_choice == 2:
 
-                #if the user picks 2, it will allow the user to view their current yum points
+                #if the user picks 2, it will allow the user to view their current Gelo points
                 print (f"You currently have: {Gelo_points['user']}")
 
             elif main_choice == 3:
@@ -223,7 +223,7 @@ def vending_machine():
         except ValueError:
             print ("Invalid User Input, Please enter a number that is valid from above")
 
-
+#yum
 # Run the program
 vending_machine()
 
